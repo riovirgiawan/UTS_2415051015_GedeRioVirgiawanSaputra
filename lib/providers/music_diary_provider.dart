@@ -16,9 +16,13 @@ class MusicDiaryProvider extends ChangeNotifier {
   bool isLoading = false;
   bool isSaving = false;
   bool isDeleting = false;
+
   String? error;
 
+  // Mengambil seluruh diary dari Supabase.
   Future<void> fetchEntries() async {
+    if (isLoading) return;
+
     isLoading = true;
     error = null;
     notifyListeners();
@@ -31,13 +35,16 @@ class MusicDiaryProvider extends ChangeNotifier {
         ..addAll(result);
     } catch (e) {
       error = e.toString();
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-
-    isLoading = false;
-    notifyListeners();
   }
 
+  // Menambahkan diary baru.
   Future<bool> addEntry(MusicDiaryEntry entry) async {
+    if (isSaving || isDeleting) return false;
+
     isSaving = true;
     error = null;
     notifyListeners();
@@ -47,20 +54,20 @@ class MusicDiaryProvider extends ChangeNotifier {
 
       _entries.insert(0, savedEntry);
 
-      isSaving = false;
-      notifyListeners();
-
       return true;
     } catch (e) {
       error = e.toString();
+      return false;
+    } finally {
       isSaving = false;
       notifyListeners();
-
-      return false;
     }
   }
 
+  // Memperbarui diary.
   Future<bool> updateEntry(MusicDiaryEntry entry) async {
+    if (isSaving || isDeleting) return false;
+
     isSaving = true;
     error = null;
     notifyListeners();
@@ -82,20 +89,20 @@ class MusicDiaryProvider extends ChangeNotifier {
         (a, b) => b.listenedAt.compareTo(a.listenedAt),
       );
 
-      isSaving = false;
-      notifyListeners();
-
       return true;
     } catch (e) {
       error = e.toString();
+      return false;
+    } finally {
       isSaving = false;
       notifyListeners();
-
-      return false;
     }
   }
 
+  // Menghapus diary.
   Future<bool> deleteEntry(String id) async {
+    if (isSaving || isDeleting) return false;
+
     isDeleting = true;
     error = null;
     notifyListeners();
@@ -107,16 +114,13 @@ class MusicDiaryProvider extends ChangeNotifier {
         (entry) => entry.id == id,
       );
 
-      isDeleting = false;
-      notifyListeners();
-
       return true;
     } catch (e) {
       error = e.toString();
+      return false;
+    } finally {
       isDeleting = false;
       notifyListeners();
-
-      return false;
     }
   }
 }

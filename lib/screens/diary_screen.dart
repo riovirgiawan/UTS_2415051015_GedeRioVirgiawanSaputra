@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -156,75 +155,117 @@ class _DiaryScreenState extends State<DiaryScreen> {
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: provider.fetchEntries,
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: provider.entries.length,
-              itemBuilder: (context, index) {
-                final entry = provider.entries[index];
-
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(12),
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: entry.artworkUrl != null
-                          ? Image.network(
-                              entry.artworkUrl!,
-                              width: 55,
-                              height: 55,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) {
-                                return _placeholder();
-                              },
-                            )
-                          : _placeholder(),
-                    ),
-                    title: Text(
-                      entry.trackName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(entry.artistName),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${entry.mood} • ${entry.rating}/5 stars',
-                        ),
-                        Text(
-                          '${entry.listenedAt.day}/'
-                          '${entry.listenedAt.month}/'
-                          '${entry.listenedAt.year}',
-                        ),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          tooltip: 'Edit diary',
-                          icon: const Icon(Icons.edit_outlined),
-                          onPressed: () => _openEditScreen(entry),
-                        ),
-                        IconButton(
-                          tooltip: 'Delete diary',
-                          icon: const Icon(
-                            Icons.delete_outline,
-                            color: Colors.red,
-                          ),
-                          onPressed: () => _confirmDelete(entry),
-                        ),
-                      ],
-                    ),
-                    onTap: () => _openEditScreen(entry),
+          return Column(
+            children: [
+              // Error banner jika refresh gagal
+              if (provider.error != null)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                );
-              },
-            ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Failed to refresh diary entries.',
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: provider.isLoading
+                            ? null
+                            : provider.fetchEntries,
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                ),
+
+              // Diary list
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: provider.fetchEntries,
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    itemCount: provider.entries.length,
+                    itemBuilder: (context, index) {
+                      final entry = provider.entries[index];
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(12),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: entry.artworkUrl != null
+                                ? Image.network(
+                                    entry.artworkUrl!,
+                                    width: 55,
+                                    height: 55,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) {
+                                      return _placeholder();
+                                    },
+                                  )
+                                : _placeholder(),
+                          ),
+                          title: Text(
+                            entry.trackName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(entry.artistName),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${entry.mood} • ${entry.rating}/5 stars',
+                              ),
+                              Text(
+                                '${entry.listenedAt.day}/'
+                                '${entry.listenedAt.month}/'
+                                '${entry.listenedAt.year}',
+                              ),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                tooltip: 'Edit diary',
+                                icon: const Icon(Icons.edit_outlined),
+                                onPressed: () => _openEditScreen(entry),
+                              ),
+                              IconButton(
+                                tooltip: 'Delete diary',
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red,
+                                ),
+                                onPressed: provider.isDeleting
+                                    ? null
+                                    : () => _confirmDelete(entry),
+                              ),
+                            ],
+                          ),
+                          onTap: () => _openEditScreen(entry),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),
