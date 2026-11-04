@@ -114,4 +114,4 @@ Universitas Pendidikan Ganesha
 
 ## Repository
 
-GitHub: https://github.com/riovirgiawan/melody_log
+GitHub: https://github.com/riovirgiawan/UTS_2415051015_GedeRioVirgiawanSaputra
