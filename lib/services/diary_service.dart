@@ -42,4 +42,11 @@ class DiaryService {
 
     return response;
   }
+
+  Future<void> deleteEntry(String id) async {
+    await _client
+        .from('music_diary_entries')
+        .delete()
+        .eq('id', id);
+  }
 }

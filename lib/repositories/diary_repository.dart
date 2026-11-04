@@ -35,4 +35,8 @@ class DiaryRepository {
 
     return MusicDiaryEntry.fromJson(response);
   }
+
+  Future<void> deleteEntry(String id) async {
+    await service.deleteEntry(id);
+  }
 }

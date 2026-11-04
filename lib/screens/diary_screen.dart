@@ -34,6 +34,59 @@ class _DiaryScreenState extends State<DiaryScreen> {
     );
   }
 
+  Future<void> _confirmDelete(MusicDiaryEntry entry) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Delete Diary Entry?'),
+          content: Text(
+            'Are you sure you want to delete '
+            '"${entry.trackName}" from your diary?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, false);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pop(dialogContext, true);
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    final provider = context.read<MusicDiaryProvider>();
+    final success = await provider.deleteEntry(entry.id);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? 'Diary entry deleted successfully!'
+              : provider.error ?? 'Failed to delete diary entry.',
+        ),
+        backgroundColor: success ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,7 +202,24 @@ class _DiaryScreenState extends State<DiaryScreen> {
                         ),
                       ],
                     ),
-                    trailing: const Icon(Icons.edit_outlined),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          tooltip: 'Edit diary',
+                          icon: const Icon(Icons.edit_outlined),
+                          onPressed: () => _openEditScreen(entry),
+                        ),
+                        IconButton(
+                          tooltip: 'Delete diary',
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                          onPressed: () => _confirmDelete(entry),
+                        ),
+                      ],
+                    ),
                     onTap: () => _openEditScreen(entry),
                   ),
                 );

@@ -15,6 +15,7 @@ class MusicDiaryProvider extends ChangeNotifier {
 
   bool isLoading = false;
   bool isSaving = false;
+  bool isDeleting = false;
   String? error;
 
   Future<void> fetchEntries() async {
@@ -88,6 +89,31 @@ class MusicDiaryProvider extends ChangeNotifier {
     } catch (e) {
       error = e.toString();
       isSaving = false;
+      notifyListeners();
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteEntry(String id) async {
+    isDeleting = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      await repository.deleteEntry(id);
+
+      _entries.removeWhere(
+        (entry) => entry.id == id,
+      );
+
+      isDeleting = false;
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      error = e.toString();
+      isDeleting = false;
       notifyListeners();
 
       return false;
