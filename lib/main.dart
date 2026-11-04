@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -16,7 +16,7 @@ class MelodyLogApp extends StatelessWidget {
       title: 'MelodyLog',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const HomeScreen(),
+      home: const MainScreen(),
     );
   }
 }
