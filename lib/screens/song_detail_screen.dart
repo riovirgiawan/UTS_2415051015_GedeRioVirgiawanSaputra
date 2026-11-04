@@ -1,136 +1,88 @@
 
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+
+import '../models/song.dart';
+import 'add_diary_screen.dart';
 
 class SongDetailScreen extends StatelessWidget {
-  final String title;
-  final String artist;
-  final String album;
-  final String genre;
-  final String duration;
-  final IconData icon;
+  final Song song;
 
   const SongDetailScreen({
     super.key,
-    required this.title,
-    required this.artist,
-    required this.album,
-    required this.genre,
-    required this.duration,
-    required this.icon,
+    required this.song,
   });
+
+  void _openAddDiary(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddDiaryScreen(song: song),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Song Details'),
+        title: const Text('Song Detail'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Center(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
+            constraints: const BoxConstraints(maxWidth: 500),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
-
-                // Placeholder artwork lagu
-                Container(
-                  width: 240,
-                  height: 240,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF302442),
-                        Color(0xFF9B7EDE),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 100,
-                    color: Colors.white,
-                  ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: song.artworkUrl != null
+                      ? Image.network(
+                          song.artworkUrl!,
+                          width: 230,
+                          height: 230,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) {
+                            return _artworkPlaceholder();
+                          },
+                        )
+                      : _artworkPlaceholder(),
                 ),
 
                 const SizedBox(height: 28),
 
-                // Judul lagu
                 Text(
-                  title,
+                  song.trackName,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
 
                 const SizedBox(height: 8),
 
-                // Nama artis
                 Text(
-                  artist,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: AppTheme.accentColor,
-                      ),
+                  song.artistName,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
 
-                const SizedBox(height: 28),
+                const SizedBox(height: 24),
 
-                // Informasi lagu
-                Card(
-                  child: Column(
-                    children: [
-                      _buildInfoTile(
-                        icon: Icons.album_rounded,
-                        label: 'Album',
-                        value: album,
-                      ),
-                      const Divider(height: 1),
-                      _buildInfoTile(
-                        icon: Icons.music_note_rounded,
-                        label: 'Genre',
-                        value: genre,
-                      ),
-                      const Divider(height: 1),
-                      _buildInfoTile(
-                        icon: Icons.access_time_rounded,
-                        label: 'Duration',
-                        value: duration,
-                      ),
-                    ],
-                  ),
-                ),
+                _detailRow('Album', song.albumName ?? '-'),
+                _detailRow('Genre', song.genre ?? '-'),
+                _detailRow('Duration', song.formattedDuration),
 
-                const SizedBox(height: 28),
+                const SizedBox(height: 32),
 
-                // Tombol menuju fitur pencatatan
                 SizedBox(
                   width: double.infinity,
+                  height: 52,
                   child: ElevatedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Add to Diary will be available in a later stage.',
-                          ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.bookmark_add_rounded),
+                    onPressed: () => _openAddDiary(context),
+                    icon: const Icon(Icons.bookmark_add),
                     label: const Text('Add to Diary'),
                   ),
-                ),
-
-                const SizedBox(height: 16),
-
-                Text(
-                  'Keep this song and its memories in your music diary.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
@@ -140,29 +92,40 @@ class SongDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoTile({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: AppTheme.accentColor,
+  Widget _detailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xFFA9A2B5),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
-      title: Text(
-        label,
-        style: const TextStyle(
-          color: AppTheme.secondaryTextColor,
-          fontSize: 12,
-        ),
-      ),
-      subtitle: Text(
-        value,
-        style: const TextStyle(
-          color: AppTheme.textColor,
-          fontWeight: FontWeight.w600,
-        ),
+    );
+  }
+
+  Widget _artworkPlaceholder() {
+    return Container(
+      width: 230,
+      height: 230,
+      color: const Color(0xFF211C2B),
+      child: const Icon(
+        Icons.music_note,
+        size: 80,
       ),
     );
   }

@@ -7,6 +7,7 @@ import '../models/song.dart';
 import '../providers/song_provider.dart';
 import 'song_detail_screen.dart';
 
+
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
 
@@ -38,14 +39,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SongDetailScreen(
-          title: song.trackName,
-          artist: song.artistName,
-          album: song.albumName ?? 'Unknown Album',
-          genre: song.genre ?? 'Unknown Genre',
-          duration: song.formattedDuration,
-          icon: Icons.music_note,
-        ),
+        builder: (_) => SongDetailScreen(song: song),
       ),
     );
   }

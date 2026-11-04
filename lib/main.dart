@@ -1,11 +1,15 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'providers/song_provider.dart';
+import 'providers/music_diary_provider.dart';
 import 'repositories/song_repository.dart';
+import 'repositories/diary_repository.dart';
 import 'screens/main_screen.dart';
 import 'services/song_service.dart';
+import 'services/diary_service.dart';
 import 'services/supabase_config.dart';
 import 'theme/app_theme.dart';
 
@@ -32,12 +36,25 @@ class MelodyLogApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SongProvider(
-        SongRepository(
-          SongService(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => SongProvider(
+            SongRepository(
+              SongService(),
+            ),
+          ),
         ),
-      ),
+        ChangeNotifierProvider(
+          create: (_) => MusicDiaryProvider(
+            DiaryRepository(
+              DiaryService(
+                Supabase.instance.client,
+              ),
+            ),
+          ),
+        ),
+      ],
       child: MaterialApp(
         title: 'MelodyLog',
         debugShowCheckedModeBanner: false,
