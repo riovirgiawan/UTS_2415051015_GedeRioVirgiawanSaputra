@@ -1,38 +1,56 @@
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:melody_log/main.dart';
 
 void main() {
-  testWidgets('MelodyLog navigation works correctly',
+  testWidgets('MelodyLog navigation and music discovery work correctly',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MelodyLogApp());
 
-    // Memastikan halaman Home tampil pertama kali
+    // Memastikan Home tampil
     expect(find.text('Your Music Overview'), findsOneWidget);
-    expect(find.text('Recent Activity'), findsOneWidget);
 
-    // Berpindah ke Explore
+    // Membuka Explore
     await tester.tap(find.text('Explore'));
     await tester.pumpAndSettle();
 
     expect(find.text('Discover Your Music'), findsOneWidget);
+    expect(find.text('Popular Songs'), findsOneWidget);
+    expect(find.text('Cruel Summer'), findsOneWidget);
 
-    // Berpindah ke My Diary
-    await tester.tap(find.text('My Diary'));
+    // Membuka detail lagu
+    await tester.tap(find.text('Cruel Summer'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Your Music Diary'), findsOneWidget);
+    expect(find.text('Song Details'), findsOneWidget);
+    expect(find.text('Taylor Swift'), findsOneWidget);
+    expect(find.text('Lover'), findsOneWidget);
+    expect(find.text('Add to Diary'), findsOneWidget);
 
-    // Berpindah ke Profile
-    await tester.tap(find.text('Profile'));
+    // Kembali ke Explore
+    await tester.pageBack();
     await tester.pumpAndSettle();
 
-    expect(find.text('MelodyLog User'), findsOneWidget);
+    expect(find.text('Discover Your Music'), findsOneWidget);
 
-    // Kembali ke Home
-    await tester.tap(find.text('Home'));
+    // Menguji pencarian lagu
+    await tester.enterText(
+      find.byType(TextField),
+      'Billie Eilish',
+    );
     await tester.pumpAndSettle();
 
-    expect(find.text('Your Music Overview'), findsOneWidget);
+    expect(find.text('Birds of a Feather'), findsOneWidget);
+    expect(find.text('Cruel Summer'), findsNothing);
+
+    // Menguji hasil pencarian kosong
+    await tester.enterText(
+      find.byType(TextField),
+      'Lagu Tidak Ada',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('No Songs Found'), findsOneWidget);
   });
 }
