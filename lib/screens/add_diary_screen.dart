@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -61,10 +60,23 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       return;
     }
 
+    // Validasi mood
+    if (_selectedMood == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Silakan pilih mood terlebih dahulu.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    // Validasi rating
     if (_rating == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please select a rating.'),
+          content: Text('Silakan berikan rating terlebih dahulu.'),
+          behavior: SnackBarBehavior.floating,
         ),
       );
       return;
@@ -136,8 +148,8 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                               height: 90,
                               fit: BoxFit.cover,
                               errorBuilder: (_, _, _) {
-                                  return _artworkPlaceholder();
-                                },
+                                return _artworkPlaceholder();
+                              },
                             )
                           : _artworkPlaceholder(),
                     ),
@@ -158,16 +170,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                           const SizedBox(height: 6),
                           Text(
                             widget.song.artistName,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           if (widget.song.albumName != null)
                             Text(
                               widget.song.albumName!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall,
+                              style: Theme.of(context).textTheme.bodySmall,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -176,15 +184,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 28),
-
                 Text(
                   'Listening Date',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 10),
-
                 OutlinedButton.icon(
                   onPressed: _selectDate,
                   icon: const Icon(Icons.calendar_month),
@@ -194,15 +199,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                     '${_listenedAt.year}',
                   ),
                 ),
-
                 const SizedBox(height: 24),
-
                 Text(
                   'How did you feel?',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
-
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -218,15 +220,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                     );
                   }).toList(),
                 ),
-
                 const SizedBox(height: 24),
-
                 Text(
                   'Your Rating',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 10),
-
                 Row(
                   children: List.generate(5, (index) {
                     final starNumber = index + 1;
@@ -247,22 +246,18 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                     );
                   }),
                 ),
-
                 Text(
                   _rating == 0
                       ? 'Select your rating'
                       : '$_rating out of 5 stars',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-
                 const SizedBox(height: 24),
-
                 Text(
                   'Personal Note',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 10),
-
                 TextFormField(
                   controller: _noteController,
                   maxLines: 4,
@@ -279,9 +274,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 30),
-
                 SizedBox(
                   height: 50,
                   child: ElevatedButton.icon(
