@@ -22,6 +22,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
   void _onSearchChanged(String query) {
     debounce?.cancel();
 
+    if (query.trim().isEmpty) {
+      context.read<SongProvider>().clearSearch();
+      return;
+    }
+
     debounce = Timer(const Duration(milliseconds: 600), () {
       if (!mounted) return;
 
@@ -98,17 +103,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         hintText: 'Search song or artist...',
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: searchController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () {
-                                  searchController.clear();
-                                  context
-                                      .read<SongProvider>()
-                                      .searchSongs('');
-                                  setState(() {});
-                                },
-                              )
-                            : null,
+                          ? IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () {
+                                searchController.clear();
+                                context.read<SongProvider>().clearSearch();
+                                setState(() {});
+                              },
+                            )
+                          : null,
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -161,7 +164,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
                     // Empty state
                     else if (provider.songs.isEmpty)
-                      _buildEmptyState(context)
+                      _buildEmptyState(
+                        context,
+                        provider.hasSearched,
+                      )
 
                     // Search results
                     else if (isWide)
@@ -260,16 +266,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    final hasQuery = searchController.text.trim().isNotEmpty;
-
+  Widget _buildEmptyState(
+    BuildContext context,
+    bool hasSearched,
+  ) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 50),
         child: Column(
           children: [
             Icon(
-              hasQuery ? Icons.search_off : Icons.library_music_outlined,
+              hasSearched
+                  ? Icons.search_off
+                  : Icons.library_music_outlined,
               size: 56,
               color: Theme.of(context)
                   .colorScheme
@@ -278,7 +287,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              hasQuery ? 'No Songs Found' : 'Start Exploring Music',
+              hasSearched
+                  ? 'No Songs Found'
+                  : 'Start Exploring Music',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -286,7 +297,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              hasQuery
+              hasSearched
                   ? 'Try searching with another keyword.'
                   : 'Search for your favorite song or artist.',
               textAlign: TextAlign.center,
@@ -334,7 +345,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
-                provider.searchSongs(searchController.text);
+                provider.retrySearch();
               },
               icon: const Icon(Icons.refresh),
               label: const Text('Try Again'),
