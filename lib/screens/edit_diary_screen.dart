@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -124,144 +123,159 @@ class _EditDiaryScreenState extends State<EditDiaryScreen> {
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 650),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                Text(
-                  widget.entry.trackName,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 6),
-                Text(widget.entry.artistName),
-
-                const SizedBox(height: 28),
-
-                Text(
-                  'Listening Date',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 10),
-
-                OutlinedButton.icon(
-                  onPressed: _selectDate,
-                  icon: const Icon(Icons.calendar_month),
-                  label: Text(
-                    '${_listenedAt.day}/'
-                    '${_listenedAt.month}/'
-                    '${_listenedAt.year}',
+          child: SizedBox(
+            width: double.infinity,
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  Text(
+                    widget.entry.trackName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                ),
-
-                const SizedBox(height: 24),
-
-                Text(
-                  'How did you feel?',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12),
-
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _moods.map((mood) {
-                    return ChoiceChip(
-                      label: Text(mood),
-                      selected: _selectedMood == mood,
-                      onSelected: (selected) {
-                        if (selected) {
-                          setState(() {
-                            _selectedMood = mood;
-                          });
-                        }
-                      },
-                    );
-                  }).toList(),
-                ),
-
-                const SizedBox(height: 24),
-
-                Text(
-                  'Your Rating',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 10),
-
-                Row(
-                  children: List.generate(5, (index) {
-                    final starNumber = index + 1;
-
-                    return IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _rating = starNumber;
-                        });
-                      },
-                      icon: Icon(
-                        starNumber <= _rating
-                            ? Icons.star
-                            : Icons.star_border,
-                        color: Colors.amber,
-                        size: 34,
-                      ),
-                    );
-                  }),
-                ),
-
-                Text(
-                  '$_rating out of 5 stars',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-
-                const SizedBox(height: 24),
-
-                Text(
-                  'Personal Note',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 10),
-
-                TextFormField(
-                  controller: _noteController,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                    hintText: 'Write about your listening experience...',
-                    border: OutlineInputBorder(),
-                    alignLabelWithHint: true,
+                  const SizedBox(height: 6),
+                  Text(
+                    widget.entry.artistName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please write a short personal note.';
-                    }
 
-                    return null;
-                  },
-                ),
+                  const SizedBox(height: 28),
 
-                const SizedBox(height: 30),
+                  Text(
+                    'Listening Date',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10),
 
-                SizedBox(
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: isSaving ? null : _updateDiary,
-                    icon: isSaving
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Icon(Icons.save),
+                  OutlinedButton.icon(
+                    onPressed: _selectDate,
+                    icon: const Icon(Icons.calendar_month),
                     label: Text(
-                      isSaving ? 'Updating...' : 'Update Diary',
+                      '${_listenedAt.day}/'
+                      '${_listenedAt.month}/'
+                      '${_listenedAt.year}',
                     ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 24),
+
+                  Text(
+                    'How did you feel?',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _moods.map((mood) {
+                      return ChoiceChip(
+                        label: Text(mood),
+                        selected: _selectedMood == mood,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setState(() {
+                              _selectedMood = mood;
+                            });
+                          }
+                        },
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  Text(
+                    'Your Rating',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10),
+
+                  Wrap(
+                    spacing: 4,
+                    children: List.generate(5, (index) {
+                      final starNumber = index + 1;
+
+                      return IconButton(
+                        constraints: const BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
+                        ),
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          setState(() {
+                            _rating = starNumber;
+                          });
+                        },
+                        icon: Icon(
+                          starNumber <= _rating
+                              ? Icons.star
+                              : Icons.star_border,
+                          color: Colors.amber,
+                          size: 34,
+                        ),
+                      );
+                    }),
+                  ),
+
+                  Text(
+                    '$_rating out of 5 stars',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  Text(
+                    'Personal Note',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10),
+
+                  TextFormField(
+                    controller: _noteController,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      hintText: 'Write about your listening experience...',
+                      border: OutlineInputBorder(),
+                      alignLabelWithHint: true,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please write a short personal note.';
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  SizedBox(
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      onPressed: isSaving ? null : _updateDiary,
+                      icon: isSaving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Icon(Icons.save),
+                      label: Text(
+                        isSaving ? 'Updating...' : 'Update Diary',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

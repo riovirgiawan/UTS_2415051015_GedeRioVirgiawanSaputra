@@ -65,7 +65,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
           return Consumer<SongProvider>(
             builder: (context, provider, child) {
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 1100,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -170,8 +175,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: provider.songs.length,
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                            SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: constraints.maxWidth >= 1100 ? 3 : 2,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 12,
                           childAspectRatio: 3.2,
@@ -197,6 +202,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       ),
                   ],
                 ),
+              ),
+            ),
               );
             },
           );

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../models/song.dart';
@@ -37,17 +36,19 @@ class SongDetailScreen extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(18),
-                  child: song.artworkUrl != null
-                      ? Image.network(
-                          song.artworkUrl!,
-                          width: 230,
-                          height: 230,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) {
-                            return _artworkPlaceholder();
-                          },
-                        )
-                      : _artworkPlaceholder(),
+                  child: SizedBox(
+                    width: 230,
+                    height: 230,
+                    child: song.artworkUrl != null
+                        ? Image.network(
+                            song.artworkUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) {
+                              return _artworkPlaceholder();
+                            },
+                          )
+                        : _artworkPlaceholder(),
+                  ),
                 ),
 
                 const SizedBox(height: 28),
@@ -120,8 +121,8 @@ class SongDetailScreen extends StatelessWidget {
 
   Widget _artworkPlaceholder() {
     return Container(
-      width: 230,
-      height: 230,
+      width: double.infinity,
+      height: double.infinity,
       color: const Color(0xFF211C2B),
       child: const Icon(
         Icons.music_note,

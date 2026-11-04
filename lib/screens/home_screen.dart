@@ -459,52 +459,68 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Tombol akses cepat
-  Widget _buildQuickActions(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Quick Actions',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+  
+Widget _buildQuickActions(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Quick Actions',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+      const SizedBox(height: 16),
 
-        const SizedBox(height: 16),
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = constraints.maxWidth < 400;
 
-        Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.search_rounded),
-                label: const Text('Explore Music'),
+          final exploreButton = ElevatedButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.search_rounded),
+            label: const Text('Explore Music'),
+          );
+
+          final diaryButton = OutlinedButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.book_rounded),
+            label: const Text('My Diary'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppTheme.accentColor,
+              side: const BorderSide(
+                color: AppTheme.primaryColor,
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
+          );
 
-            const SizedBox(width: 12),
+          if (isCompact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                exploreButton,
+                const SizedBox(height: 12),
+                diaryButton,
+              ],
+            );
+          }
 
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.book_rounded),
-                label: const Text('My Diary'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.accentColor,
-                  side: const BorderSide(
-                    color: AppTheme.primaryColor,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 14,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+          return Row(
+            children: [
+              Expanded(child: exploreButton),
+              const SizedBox(width: 12),
+              Expanded(child: diaryButton),
+            ],
+          );
+        },
+      ),
+    ],
+  );
+}
+
 }
