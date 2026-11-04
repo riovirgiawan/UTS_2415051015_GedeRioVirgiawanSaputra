@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'providers/song_provider.dart';
 import 'repositories/song_repository.dart';
 import 'screens/main_screen.dart';
 import 'services/song_service.dart';
+import 'services/supabase_config.dart';
 import 'theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (!SupabaseConfig.isConfigured) {
+    throw Exception(
+      'Supabase configuration is missing. '
+      'Run the app with supabase_config.json.',
+    );
+  }
+
+  await Supabase.initialize(
+    url: SupabaseConfig.url,
+    publishableKey: SupabaseConfig.publishableKey,
+  );
+
   runApp(const MelodyLogApp());
 }
 
