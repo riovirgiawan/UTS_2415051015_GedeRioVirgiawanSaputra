@@ -16,4 +16,23 @@ class DiaryRepository {
 
     return MusicDiaryEntry.fromJson(response);
   }
+
+  Future<List<MusicDiaryEntry>> getEntries() async {
+    final response = await service.getEntries();
+
+    return response
+        .map((item) => MusicDiaryEntry.fromJson(item))
+        .toList();
+  }
+
+  Future<MusicDiaryEntry> updateEntry(
+    MusicDiaryEntry entry,
+  ) async {
+    final response = await service.updateEntry(
+      entry.id,
+      entry.toJson(),
+    );
+
+    return MusicDiaryEntry.fromJson(response);
+  }
 }
